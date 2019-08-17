@@ -1,0 +1,48 @@
+:host {
+  display: block;
+  position: absolute;
+  overflow: hidden;
+  transform-origin: 0% 0%;
+}
+
+@keyframes travel {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+.traveler-wrapper {
+  position: relative;
+  width: 100%;
+
+  .traveler {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+          
+    .spinner-wrapper {
+      position: relative;
+        
+      .spinner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        animation: spin 1s infinite;
+      }
+    }
+  }
+}    

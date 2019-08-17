@@ -1,4 +1,4 @@
-<div *ngFor="let course of $courses | async" class="course" [ngStyle]="course.style" >
+<!-- <div *ngFor="let course of $courses | async" class="course" [ngStyle]="course.style">
 	<div class="traveler-wrapper">
 		<div class="traveler" [ngStyle]="course.travelStyle">
 			<div class="spinner-wrapper">
@@ -8,4 +8,7 @@
 			</div>
 		</div>
 	</div>
+</div> -->
+<div class="courses-wrapper">
+	<app-course [course]="course" [ngStyle]="course.style"></app-course>
 </div>

@@ -6,6 +6,12 @@
   right: -100px;
   bottom: -100px;
   overflow: hidden;
+
+  .courses-wrapper {
+    position:relative;
+    height: 100%;
+    width: 100%;
+  }
 }
 
 @keyframes travel {
