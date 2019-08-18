@@ -10,6 +10,7 @@
 	</div>
 </div> -->
 <div class="courses-wrapper">
-	<app-course *ngFor="let c of $courses | async" [course]="c" [ngStyle]="c.style"></app-course>
+	<!-- <app-course *ngFor="let c of $courses | async" [course]="c" [ngStyle]="c.style"></app-course> -->
+	<app-course *ngFor="let c of courses | keyvalue" [course]="c.value" [ngStyle]="c.value.style"></app-course>
 	<!-- <app-course [course]="course" [ngStyle]="course.style"></app-course> -->
 </div>
