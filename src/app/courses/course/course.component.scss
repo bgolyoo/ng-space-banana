@@ -1,5 +1,11 @@
 :host {
   display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.course {
+  display: block;
   position: absolute;
   transform-origin: 0% 0%;
 }

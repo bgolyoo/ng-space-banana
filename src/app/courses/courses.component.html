@@ -1,16 +1,4 @@
-<!-- <div *ngFor="let course of $courses | async" class="course" [ngStyle]="course.style">
-	<div class="traveler-wrapper">
-		<div class="traveler" [ngStyle]="course.travelStyle">
-			<div class="spinner-wrapper">
-				<div class="spinner" [ngStyle]="course.spinStyle">
-					🍌
-				</div>
-			</div>
-		</div>
-	</div>
-</div> -->
 <div class="courses-wrapper">
-	<!-- <app-course *ngFor="let c of $courses | async" [course]="c" [ngStyle]="c.style"></app-course> -->
-	<app-course *ngFor="let c of courses | keyvalue" [course]="c.value" [ngStyle]="c.value.style"></app-course>
-	<!-- <app-course [course]="course" [ngStyle]="course.style"></app-course> -->
+	<!-- <app-course *ngFor="let c of courses | keyvalue" [course]="c.value" [ngStyle]="c.value.style"></app-course> -->
+	<app-course *ngFor="let id of ids" [id]="id" [width]="hostWidth" [height]="hostHeight"></app-course>
 </div>

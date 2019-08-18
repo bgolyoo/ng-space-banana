@@ -26,14 +26,24 @@ export interface Course {
 })
 export class CoursesComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  ids: number[] = [];
   courses: { [id: number]: Course } = {};
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  get hostWidth(): number {
+    return this.elRef.nativeElement.clientWidth;
+  }
+
+  get hostHeight(): number {
+    return this.elRef.nativeElement.clientHeight;
+  }
 
   constructor(private elRef: ElementRef, private chRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    const numOfCourses = 11;
+    const numOfCourses = 1;
     new Array(numOfCourses).fill(null).map((_, index) => this.courses[index] = this.randomCourse(index));
+    this.ids = new Array(numOfCourses).fill(null).map((_, index) => index);
     this.chRef.detectChanges();
     Object.keys(this.courses).forEach(key => this.courses[key].destroy());
   }
