@@ -1,12 +1,16 @@
 import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, ElementRef } from '@angular/core';
-import { BehaviorSubject, Subject, interval, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, interval, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 enum Side {
   TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3
 }
 
-interface Course {
+enum Direction {
+  RIGHT, LEFT
+}
+
+export interface Course {
   id: string | number;
   style?: { [_: string]: string },
   travelStyle?: { [_: string]: string },
@@ -41,10 +45,14 @@ export class CoursesComponent implements OnInit, AfterViewInit, OnDestroy {
   $courses: BehaviorSubject<Course[]> = new BehaviorSubject<Course[]>(this.createCourses(6));
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
+  private get $coursesAsObservable(): Observable<Course[]> {
+    return this.$courses.asObservable();
+  }
+
   constructor(private elRef: ElementRef) { }
 
   ngOnInit() {
-    // this.watchCourses();
+    this.watchCourses();
     this.randomCourse();
   }
 
@@ -57,18 +65,22 @@ export class CoursesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private watchCourses() {
-    this.$courses.asObservable().subscribe((courses: Course[]) => {
-      courses.forEach((c: Course) => {
-        if (!c.destroyInitiated) {
-          c.destroy();
-          c.destroyInitiated = true;
-        }
-      });
+    this.$coursesAsObservable.subscribe((courses: Course[]) => {
+      // courses.forEach((c: Course) => {
+      //   c.destroy();
+      // });
 
-      if (courses.length < 6) {
-        const numOfCourses = 6 - courses.length;
-        this.$courses.next([...courses, ...this.createCourses(numOfCourses)]);
-      }
+      // courses.forEach((c: Course) => {
+      //   if (!c.destroyInitiated) {
+      //     c.destroy();
+      //     c.destroyInitiated = true;
+      //   }
+      // });
+
+      // if (courses.length < 6) {
+      //   const numOfCourses = 6 - courses.length;
+      //   this.$courses.next([...courses, ...this.createCourses(numOfCourses)]);
+      // }
     });
   }
 
@@ -79,53 +91,55 @@ export class CoursesComponent implements OnInit, AfterViewInit, OnDestroy {
   private createCourses(numOfCourses: number): Course[] {
     const courses = [];
     for (let i = 0; i < numOfCourses; i++) {
-      courses.push(this.createCourse(`${new Date().toISOString()}_${i}`));
+      // courses.push(this.createCourse(`${new Date().toISOString()}_${i}`));
+      courses.push(this.randomCourse());
     }
+    console.log(courses);
     return courses;
   }
 
-  private createCourse(id: string | number): Course {
-    const hostWidth = this.elRef.nativeElement.clientWidth;
-    const hostHeight = this.elRef.nativeElement.clientHeight;
+  // private createCourse(id: string | number): Course {
+  // const hostWidth = this.elRef.nativeElement.clientWidth;
+  // const hostHeight = this.elRef.nativeElement.clientHeight;
 
-    const side = this.randomNumber(4);
-    let top, left, rotate, travelDistance;
-    const { travelTime, spinTime } = this.createCourseTimeParams();
-    switch (side) {
-      default:
-      case Side.TOP:
-        top = 0;
-        left = this.randomNumber(hostWidth);
-        rotate = this.randomNumber(160, 20);
-        travelDistance = hostHeight / Math.sin(rotate * Math.PI / 180);
-        break;
-      case Side.RIGHT:
-        top = this.randomNumber(hostHeight);
-        left = hostWidth;
-        travelDistance = hostWidth;
-        rotate = this.randomNumber(340, 110);
-        break;
-      case Side.BOTTOM:
-        top = hostHeight;
-        left = this.randomNumber(hostWidth);
-        rotate = this.randomNumber(200, 340);
-        travelDistance = hostHeight / Math.sin(rotate * Math.PI / 180);
-        break;
-      case Side.LEFT:
-        top = this.randomNumber(hostHeight);
-        left = 0;
-        travelDistance = hostWidth;
-        rotate = this.randomNumber(-70, 70);
-        break;
-    }
-    return {
-      id,
-      destroy: () => timer(travelTime * 1000)
-        .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe(() => this.destroyCourse(id)),
-      ...this.createCourseStyles(top, left, rotate, travelTime, spinTime)
-    };
-  }
+  // const side = this.randomNumber(4);
+  // let top, left, rotate, travelDistance;
+  // const { travelTime, spinTime } = this.createCourseTimeParams();
+  // switch (side) {
+  //   default:
+  //   case Side.TOP:
+  //     top = 0;
+  //     left = this.randomNumber(hostWidth);
+  //     rotate = this.randomNumber(160, 20);
+  //     travelDistance = hostHeight / Math.sin(rotate * Math.PI / 180);
+  //     break;
+  //   case Side.RIGHT:
+  //     top = this.randomNumber(hostHeight);
+  //     left = hostWidth;
+  //     travelDistance = hostWidth;
+  //     rotate = this.randomNumber(340, 110);
+  //     break;
+  //   case Side.BOTTOM:
+  //     top = hostHeight;
+  //     left = this.randomNumber(hostWidth);
+  //     rotate = this.randomNumber(200, 340);
+  //     travelDistance = hostHeight / Math.sin(rotate * Math.PI / 180);
+  //     break;
+  //   case Side.LEFT:
+  //     top = this.randomNumber(hostHeight);
+  //     left = 0;
+  //     travelDistance = hostWidth;
+  //     rotate = this.randomNumber(-70, 70);
+  //     break;
+  // }
+  // return {
+  //   id,
+  //   destroy: () => timer(travelTime * 1000)
+  //     .pipe(takeUntil(this.ngUnsubscribe))
+  //     .subscribe(() => this.destroyCourse(id)),
+  //   ...this.createCourseStyles(top, left, rotate, travelTime, spinTime)
+  // };
+  // }
 
   private createCourseTimeParams(): { travelTime: number, spinTime: number } {
     return {
@@ -134,25 +148,28 @@ export class CoursesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private createCourseStyles(top: number, left: number, rotate: number, travelTime: number, spinTime: number): Partial<Course> {
+  private createCourseStyles(top: number, left: number, rotate: number, travelTime: number, travelDistance: number, spinTime: number, objectHeight: number): Partial<Course> {
     return {
       style: {
         top: `${top}px`,
         left: `${left}px`,
-        transform: `rotate(${rotate}deg)`
+        transform: `rotate(${rotate}deg)`,
+        width: `${travelDistance}px`,
+        height: `${objectHeight}px`,
+        'font-size': `${objectHeight}px`
       },
       travelStyle: {
-        animation: `travel ${travelTime}s forwards`
+        animation: `travel ${travelTime}s linear infinite`
       },
       spinStyle: {
-        animation: `spin ${spinTime}s forwards`
+        animation: `spin ${spinTime}s linear infinite`
       }
     }
   }
 
   private destroyCourse(courseId: string | number) {
     const courses = this.$courses.getValue();
-    courses.splice(courses.findIndex((c: Course) => c.id === courseId), 1);
+    courses.splice(courses.findIndex((c: Course) => c.id === courseId), 1, this.randomCourse());
     this.$courses.next(courses);
   }
 
@@ -166,41 +183,116 @@ export class CoursesComponent implements OnInit, AfterViewInit, OnDestroy {
     const hostWidth = this.elRef.nativeElement.clientWidth;
     const hostHeight = this.elRef.nativeElement.clientHeight;
     const SIDES = [Side.TOP, Side.RIGHT, Side.BOTTOM, Side.LEFT];
-    // const side = this.randomArrayItem(SIDES);
-    // const otherSide = this.randomArrayItem(SIDES.splice(SIDES.findIndex((s: Side) => s === side), 1));
-    const side = this.randomArrayItem([Side.TOP]);
-    const otherSide = this.randomArrayItem([Side.RIGHT]);
-    if (
-      (side === Side.TOP && otherSide === Side.BOTTOM) ||
+    const side = this.randomArrayItem(SIDES);
+    const otherSide = this.randomArrayItem(SIDES.splice(SIDES.findIndex((s: Side) => s === side), 1));
+    // const side = this.randomArrayItem([Side.TOP]);
+    // const otherSide = this.randomArrayItem([Side.BOTTOM]);
+    const oppositeSide = (side === Side.TOP && otherSide === Side.BOTTOM) ||
       (side === Side.BOTTOM && otherSide === Side.TOP) ||
       (side === Side.LEFT && otherSide === Side.RIGHT) ||
-      (side === Side.RIGHT && otherSide === Side.LEFT)
-    ) {
-      if (
-        (side === Side.TOP && otherSide === Side.BOTTOM) ||
-        (side === Side.BOTTOM && otherSide === Side.TOP)
-      ) {
-        this.oppositeSideCourse(hostWidth, hostHeight);
-      } else {
-        this.oppositeSideCourse(hostHeight, hostWidth);
-      }
-    } else {
-      this.adjasentSideCourse(hostWidth, hostHeight);
+      (side === Side.RIGHT && otherSide === Side.LEFT);
+    return this.createCourse(side, otherSide, hostWidth, hostHeight, oppositeSide);
+  }
+
+  private createCourse(side: Side, otherSide: Side, sideLength: number, otherSideLength: number, oppositeSide?: boolean): Course {
+    let triangle;
+    let top, left, rotate, travelDistance;
+    const { travelTime, spinTime } = this.createCourseTimeParams();
+    const id = new Date().toISOString();
+    const objectHeight = 20;
+    const paddedSideLength = { min: sideLength / 100 * 20, max: sideLength - (sideLength / 100 * 20) };
+    const paddedOtherSideLength = { min: otherSideLength / 100 * 20, max: otherSideLength - (otherSideLength / 100 * 20) };
+
+
+
+    const direction: Direction = oppositeSide ?
+      this.randomArrayItem([Direction.RIGHT, Direction.LEFT])
+      : side === Side.TOP && otherSide === Side.LEFT ? Direction.RIGHT
+        : side === Side.TOP && otherSide === Side.RIGHT ? Direction.LEFT
+          : side === Side.RIGHT && otherSide === Side.TOP ? Direction.RIGHT
+            : side === Side.RIGHT && otherSide === Side.BOTTOM ? Direction.LEFT
+              : side === Side.BOTTOM && otherSide === Side.RIGHT ? Direction.RIGHT
+                : side === Side.BOTTOM && otherSide === Side.LEFT ? Direction.LEFT
+                  : side === Side.LEFT && otherSide === Side.BOTTOM ? Direction.RIGHT
+                    : side === Side.LEFT && otherSide === Side.TOP ? Direction.LEFT
+                      : null;
+
+    switch (side) {
+      default:
+      case Side.TOP:
+        triangle = oppositeSide 
+        ? this.randomTriangle({ max: sideLength }, { min: otherSideLength, max: otherSideLength })
+        : this.randomTriangle(paddedSideLength, paddedOtherSideLength);
+        travelDistance = triangle.c;
+        top = 0;
+        if (direction === Direction.LEFT) {
+          left = oppositeSide ? this.randomNumber(sideLength - triangle.a, 0) :sideLength - triangle.a;
+          rotate = triangle.betaDegree;
+        } else {
+          left = oppositeSide ? this.randomNumber(sideLength, triangle.a) : triangle.a;
+          rotate = 180 - triangle.betaDegree;
+        }
+        break;
+      case Side.RIGHT:
+        triangle = oppositeSide
+          ? this.randomTriangle({ max: otherSideLength }, { min: sideLength, max: sideLength })
+          : this.randomTriangle(paddedOtherSideLength, paddedSideLength);
+        travelDistance = triangle.c;
+        left = sideLength;
+        if (direction === Direction.LEFT) {
+          top = oppositeSide ? this.randomNumber(otherSideLength - triangle.a, 0) : otherSideLength - triangle.a;
+          rotate = 90 + triangle.betaDegree;
+        } else {
+          top = oppositeSide ? this.randomNumber(otherSideLength, triangle.a) : triangle.a;
+          rotate = 270 - triangle.betaDegree;
+        }
+        break;
+      case Side.BOTTOM:
+        triangle = oppositeSide
+          ? this.randomTriangle({ max: sideLength }, { min: otherSideLength, max: otherSideLength })
+          : this.randomTriangle(paddedSideLength, paddedOtherSideLength);
+        travelDistance = triangle.c;
+        top = otherSideLength;
+        if (direction === Direction.LEFT) {
+          left = oppositeSide ? this.randomNumber(sideLength, triangle.a) : triangle.a;
+          rotate = 180 + triangle.betaDegree;
+        } else {
+          left = oppositeSide ? this.randomNumber(sideLength - triangle.a, 0) : sideLength - triangle.a;
+          rotate = 360 - triangle.betaDegree;
+        }
+        break;
+      case Side.LEFT:
+        triangle = oppositeSide
+          ? this.randomTriangle({ max: otherSideLength }, { min: sideLength, max: sideLength })
+          : this.randomTriangle(paddedOtherSideLength, paddedSideLength);
+        travelDistance = triangle.c;
+        left = 0;
+        if (direction === Direction.LEFT) {
+          top = oppositeSide ? this.randomNumber(otherSideLength, triangle.a) : triangle.a;
+          rotate = 270 + triangle.betaDegree;
+        } else {
+          top = oppositeSide ? this.randomNumber(otherSideLength - triangle.a, 0) : otherSideLength - triangle.a;
+          rotate = 90 - triangle.betaDegree;
+        }
+        break;
     }
+    return {
+      id,
+      destroy: () => {
+        let timerSubscription = timer(travelTime * 1000)
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe(() => {
+            this.destroyCourse(id);
+            timerSubscription.unsubscribe();
+            timerSubscription = undefined;
+          })
+      },
+      ...this.createCourseStyles(top, left, rotate, travelTime, travelDistance, spinTime, objectHeight)
+    };
   }
 
   private randomArrayItem(array: any[]): any {
     return array[this.randomNumber(array.length)];
-  }
-
-  private adjasentSideCourse(aMax: number, bMax: number) {
-    const triangle = this.randomTriangle({ max: aMax }, { max: bMax });
-console.log(triangle);
-    return;
-  }
-
-  private oppositeSideCourse(aMax: number, bMax: number) {
-    return this.randomTriangle({ max: aMax }, { min: bMax, max: bMax });
   }
 
   private randomTriangle(aSide: { min?: number, max: number }, bSide: { min?: number, max: number }): { alphaDegree: number, betaDegree: number, a: number, b: number, c: number } {
