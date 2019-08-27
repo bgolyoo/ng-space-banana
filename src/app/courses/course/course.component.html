@@ -1,10 +1,8 @@
-<div class="$course | async" [ngStyle]="course.style" class="course">
+<div *ngIf="course" [ngStyle]="course.style" class="course">
 	<div class="traveler-wrapper">
 		<div class="traveler" [ngStyle]="course.travelStyle">
 			<div class="spinner-wrapper">
-				<div class="spinner" [ngStyle]="course.spinStyle">
-					🍌
-				</div>
+				<div class="spinner" [ngStyle]="course.spinStyle">🍌</div>
 			</div>
 		</div>
 	</div>

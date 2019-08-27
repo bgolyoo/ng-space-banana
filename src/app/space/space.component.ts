@@ -5,14 +5,11 @@ import { Component, OnInit, ElementRef, AfterViewInit } from '@angular/core';
   templateUrl: './space.component.html',
   styleUrls: ['./space.component.scss']
 })
-export class SpaceComponent implements OnInit, AfterViewInit {
+export class SpaceComponent implements AfterViewInit {
 
   stars = [];
 
   constructor(private elRef: ElementRef) { }
-
-  ngOnInit() {
-  }
 
   ngAfterViewInit() {
     this.createStars(200, 1);

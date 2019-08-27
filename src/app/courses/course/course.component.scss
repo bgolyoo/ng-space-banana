@@ -2,12 +2,35 @@
   display: block;
   height: 100%;
   width: 100%;
-}
 
-.course {
-  display: block;
-  position: absolute;
-  transform-origin: 0% 0%;
+  .course {
+    display: block;
+    position: absolute;
+    transform-origin: 0% 0%;
+
+    .traveler-wrapper {
+      position: relative;
+      width: 100%;
+
+      .traveler {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+              
+        .spinner-wrapper {
+          position: relative;
+            
+          .spinner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: spin 1s infinite;
+          }
+        }
+      }
+    }
+  }
 }
 
 @keyframes travel {
@@ -27,27 +50,3 @@
     transform: rotate(360deg);
   }
 }
-
-
-.traveler-wrapper {
-  position: relative;
-  width: 100%;
-
-  .traveler {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-          
-    .spinner-wrapper {
-      position: relative;
-        
-      .spinner {
-        position: absolute;
-        top: 0;
-        left: 0;
-        animation: spin 1s infinite;
-      }
-    }
-  }
-}    

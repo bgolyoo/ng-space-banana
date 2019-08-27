@@ -41,12 +41,12 @@ export class CourseComponent implements OnInit {
   constructor(private elRef: ElementRef, private chRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    // this.course = this.randomCourse(this.id);
-    // this.chRef.detectChanges();
-    // this.course.destroy();
-    const c = this.randomCourse(this.id);
-    this.$course = new BehaviorSubject(this.randomCourse(this.id));
-    c.destroy();
+    this.course = this.randomCourse(this.id);
+    this.chRef.detectChanges();
+    this.course.destroy();
+    // const c = this.randomCourse(this.id);
+    // this.$course = new BehaviorSubject(this.randomCourse(this.id));
+    // c.destroy();
   }
 
   ngAfterViewInit() { }
@@ -88,18 +88,32 @@ export class CourseComponent implements OnInit {
         'font-size': `${objectHeight}em`
       },
       travelStyle: {
-        animation: `travel ${travelTime}s linear infinite`
+        'animation-name': 'travel',
+        'animation-duration': `${travelTime}s`,
+        'animation-timing-function': 'linear',
+        'animation-delay': '0s',
+        'animation-iteration-count': '1',
+        'animation-direction': 'normal',
+        'animation-fill-mode': 'forwards'
       },
       spinStyle: {
-        animation: `spin ${spinTime}s linear infinite${spinReverse ? ' reverse' : ''}`
+        'animation-name': 'spin',
+        'animation-duration': `${spinTime}s`,
+        'animation-timing-function': 'linear',
+        'animation-delay': '0s',
+        'animation-iteration-count': 'infinite',
+        'animation-direction': `${spinReverse ? 'reverse' : 'normal'}`,
+        'animation-fill-mode': 'forwards'
       }
     }
   }
 
   private destroyCourse(courseId: number) {
     console.log(courseId);
+    this.course = undefined;
+    this.chRef.detectChanges();
     this.course = this.randomCourse(courseId);
-    // this.chRef.detectChanges();
+    this.chRef.detectChanges();
     this.course.destroy();
   }
 
