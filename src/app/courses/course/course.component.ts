@@ -1,5 +1,5 @@
-import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, Input } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, interval, timer } from 'rxjs';
+import { Component, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, Input } from '@angular/core';
+import { Subject, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 enum Side {
@@ -11,7 +11,6 @@ enum Direction {
 }
 
 export interface Course {
-  id: string | number;
   style?: { [_: string]: string },
   travelStyle?: { [_: string]: string },
   spinStyle?: { [_: string]: string },
@@ -22,34 +21,23 @@ export interface Course {
 @Component({
   selector: 'app-course',
   templateUrl: './course.component.html',
-  styleUrls: ['./course.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./course.component.scss']
 })
-export class CourseComponent implements OnInit {
+export class CourseComponent implements OnInit, OnDestroy {
 
-  // @Input() course: Course;
-
-  @Input() id: number;
   @Input() width: number;
   @Input() height: number;
 
-
   course: Course;
-  $course: BehaviorSubject<Course>;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(private elRef: ElementRef, private chRef: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.course = this.randomCourse(this.id);
+    this.course = this.randomCourse();
     this.chRef.detectChanges();
     this.course.destroy();
-    // const c = this.randomCourse(this.id);
-    // this.$course = new BehaviorSubject(this.randomCourse(this.id));
-    // c.destroy();
   }
-
-  ngAfterViewInit() { }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
@@ -64,9 +52,8 @@ export class CourseComponent implements OnInit {
   private createCourses(numOfCourses: number): Course[] {
     const courses = [];
     for (let i = 0; i < numOfCourses; i++) {
-      courses.push(this.randomCourse(i));
+      courses.push(this.randomCourse());
     }
-    console.log(courses);
     return courses;
   }
 
@@ -108,11 +95,10 @@ export class CourseComponent implements OnInit {
     }
   }
 
-  private destroyCourse(courseId: number) {
-    console.log(courseId);
+  private destroyCourse() {
     this.course = undefined;
     this.chRef.detectChanges();
-    this.course = this.randomCourse(courseId);
+    this.course = this.randomCourse();
     this.chRef.detectChanges();
     this.course.destroy();
   }
@@ -123,7 +109,7 @@ export class CourseComponent implements OnInit {
     const adjacentSide = Math.pow(hypotenuseSide, 2) - Math.pow(oppositeSide, 2);
   }
 
-  private randomCourse(id: number): Course {
+  private randomCourse(): Course {
     const hostWidth = this.elRef.nativeElement.clientWidth;
     const hostHeight = this.elRef.nativeElement.clientHeight;
     const SIDES = [Side.TOP, Side.RIGHT, Side.BOTTOM, Side.LEFT];
@@ -142,10 +128,10 @@ export class CourseComponent implements OnInit {
       (side === Side.BOTTOM && otherSide === Side.TOP) ||
       (side === Side.LEFT && otherSide === Side.RIGHT) ||
       (side === Side.RIGHT && otherSide === Side.LEFT);
-    return this.createCourse(id, side, otherSide, hostWidth, hostHeight, oppositeSide);
+    return this.createCourse(side, otherSide, hostWidth, hostHeight, oppositeSide);
   }
 
-  private createCourse(id: number, side: Side, otherSide: Side, sideLength: number, otherSideLength: number, oppositeSide?: boolean): Course {
+  private createCourse(side: Side, otherSide: Side, sideLength: number, otherSideLength: number, oppositeSide?: boolean): Course {
     let triangle;
     let top, left, rotate, travelDistance;
     const { travelTime, spinTime } = this.createCourseTimeParams();
@@ -228,12 +214,11 @@ export class CourseComponent implements OnInit {
         break;
     }
     return {
-      id,
       destroy: () => {
         let timerSubscription = timer((travelTime + travelDelay) * 1000)
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe(() => {
-            this.destroyCourse(id);
+            this.destroyCourse();
             timerSubscription.unsubscribe();
             timerSubscription = undefined;
           })
