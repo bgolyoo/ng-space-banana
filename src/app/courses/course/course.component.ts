@@ -135,7 +135,7 @@ export class CourseComponent implements OnInit, OnDestroy {
     let triangle;
     let top, left, rotate, travelDistance;
     const { travelTime, spinTime } = this.createCourseTimeParams();
-    const objectHeight = this.randomArrayItem([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 8, 9]);
+    const objectHeight = this.randomArrayItem([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 8, 9, 13]);
     const spinReverse = this.randomArrayItem([true, false]);
     const paddedSideLength = { min: sideLength / 100 * 20, max: sideLength - (sideLength / 100 * 20) };
     const paddedOtherSideLength = { min: otherSideLength / 100 * 20, max: otherSideLength - (otherSideLength / 100 * 20) };
