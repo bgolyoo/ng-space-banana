@@ -12084,20 +12084,20 @@ export const CONSTELLATIONS = {
       ]
     }
   ],
-  'minmax': {
-    'ra_min': 0,
-    'ra_max': 976.667,
-    'dec_min': -836.667,
-    'dec_max': 892.5,
-    'mag_min': -1.47,
-    'mag_max': 5.95,
-    'ra_north_min': -997.824,
-    'ra_north_max': 995.247,
-    'dec_north_min': -996.714,
-    'dec_north_max': 992.277,
-    'ra_south_min': -996.446,
-    'ra_south_max': 996.642,
-    'dec_south_min': -993.225,
-    'dec_south_max': 995.545
+  minmax: {
+    ra_min: 0,
+    ra_max: 976.667,
+    dec_min: -836.667,
+    dec_max: 892.5,
+    mag_min: -1.47,
+    mag_max: 5.95,
+    ra_north_min: -997.824,
+    ra_north_max: 995.247,
+    dec_north_min: -996.714,
+    dec_north_max: 992.277,
+    ra_south_min: -996.446,
+    ra_south_max: 996.642,
+    dec_south_min: -993.225,
+    dec_south_max: 995.545
   }
 }
