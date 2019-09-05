@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { timer } from 'rxjs';
 
 @Component({
@@ -6,7 +6,7 @@ import { timer } from 'rxjs';
   templateUrl: './title.component.html',
   styleUrls: ['./title.component.scss']
 })
-export class TitleComponent implements OnInit, AfterViewInit {
+export class TitleComponent implements OnInit {
 
   centered = true;
 
@@ -14,9 +14,6 @@ export class TitleComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     timer(3000).subscribe(() => this.centered = false);
-  }
-
-  ngAfterViewInit() {
   }
 
 }

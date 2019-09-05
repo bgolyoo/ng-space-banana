@@ -1,4 +1,7 @@
-<span *ngFor="let star of stars" [ngStyle]="star.style" class="star">
-  <span *ngIf="star.label" class="label">{{ star.label }}</span>
-</span>
-<span *ngFor="let line of lines"  [ngStyle]="line" class="line"></span>
+<span *ngFor="let star of stars" [ngStyle]="star.style" class="star"></span>
+<ng-container *ngIf="showConstellations">
+  <span *ngFor="let star of constellationStars" [ngStyle]="star.style" class="star">
+    <span *ngIf="star.label && showConstellationLabels" class="label">{{ star.label }}</span>
+  </span>
+  <span *ngFor="let line of lines" [ngStyle]="line" class="line"></span>
+</ng-container>

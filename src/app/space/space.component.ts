@@ -9,11 +9,21 @@ import { CONSTELLATIONS } from './constellations';
 export class SpaceComponent implements AfterViewInit {
 
   stars = [];
+  constellationStars = [];
   lines = [];
+  showConstellations = false;
+  showConstellationLabels = false;
   private hostWidth;
   private hostHeight;
 
-  constructor(private elRef: ElementRef) { }
+  constructor(private elRef: ElementRef) {
+    window['toggleConstellations'] = () => {
+      this.showConstellations = !this.showConstellations;
+    }
+    window['toggleConstellationLabels'] = () => {
+      this.showConstellationLabels = !this.showConstellationLabels;
+    }
+  }
 
   ngAfterViewInit() {
     this.hostWidth = this.elRef.nativeElement.clientWidth;
@@ -57,7 +67,7 @@ export class SpaceComponent implements AfterViewInit {
     const size = (mag, magMax, sizeMax) => (opacity(mag, magMax) * sizeMax - 1) + 1;
     const bgStyle = (opacity) => `rgba(255,255,255,${opacity})`;
 
-    const addStar = (star) => this.stars.push({
+    const addStar = (star) => this.constellationStars.push({
       style: {
         'background-color': star.bgStyle,
         'left': `${star.left}px`,
@@ -126,12 +136,14 @@ export class SpaceComponent implements AfterViewInit {
               ? 180 + triangle.betaDegree
               : 180 - triangle.betaDegree;
 
-          this.lines.push({
-            bottom: `${fromStar.bottom}px`,
-            left: `${fromStar.left}px`,
-            transform: `rotate(${rotate}deg)`,
-            width: `${triangle.c}px`
-          });
+          if (this.hostWidth / 2 > triangle.c) {
+            this.lines.push({
+              bottom: `${fromStar.bottom}px`,
+              left: `${fromStar.left}px`,
+              transform: `rotate(${rotate}deg)`,
+              width: `${triangle.c}px`
+            });
+          }
 
           addStar(fromStar);
           lastStar = toStar;
